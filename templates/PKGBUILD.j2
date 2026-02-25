@@ -6,7 +6,7 @@ pkgdesc="OpenTelemetry Collector Contrib"
 arch=('x86_64' 'aarch64')
 url="https://github.com/open-telemetry/opentelemetry-collector-releases"
 license=('Apache-2.0')
-depends=('glibc')
+depends=()
 makedepends=()
 source_x86_64=("${url}/releases/download/v${pkgver}/otelcol-contrib_${pkgver}_linux_amd64.tar.gz")
 source_aarch64=("${url}/releases/download/v${pkgver}/otelcol-contrib_${pkgver}_linux_arm64.tar.gz")
@@ -14,5 +14,5 @@ md5sums_x86_64=('SKIP')
 md5sums_aarch64=('SKIP')
 
 package() {
-  install -Dm755 "${srcdir}/otelcol-contrib" "${pkgdir}/usr/bin/otelcol-contrib"
+  install -Dm755 "${srcdir}/otelcol-contrib" "${pkgdir}{{ otel_collector_contrib_binary_install_dir }}/otelcol-contrib"
 }
