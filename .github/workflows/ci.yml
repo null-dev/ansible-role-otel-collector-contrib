@@ -16,6 +16,7 @@ jobs:
         distro:
           - ubuntu2204
           - debian12
+          # - fedora43
           - archlinux
 
     steps:
