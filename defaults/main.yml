@@ -5,9 +5,6 @@ otel_collector_contrib_state: "present"
 # Architecture mapping
 otel_collector_contrib_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' if ansible_architecture == 'aarch64' else ansible_architecture }}"
 
-# OS specific variables
-otel_collector_contrib_os_type: "{{ ansible_system | lower }}"
-
 # Installation method
 otel_collector_contrib_install_method: >-
   {{
