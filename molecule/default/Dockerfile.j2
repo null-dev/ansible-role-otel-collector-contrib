@@ -1,0 +1,38 @@
+{% if lookup('env', 'MOLECULE_IMAGE') %}
+FROM {{ lookup('env', 'MOLECULE_IMAGE') }}
+{% else %}
+FROM geerlingguy/docker-ubuntu2204-ansible:latest
+{% endif %}
+
+ENV container=docker
+
+# Install systemd and python if not present
+RUN if [ -f /etc/redhat-release ]; then \
+      yum -y update; yum -y install systemd python3 sudo; yum clean all; \
+      (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+      rm -f /lib/systemd/system/multi-user.target.wants/*;\
+      rm -f /etc/systemd/system/*.wants/*;\
+      rm -f /lib/systemd/system/local-fs.target.wants/*; \
+      rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+      rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+      rm -f /lib/systemd/system/basic.target.wants/*;\
+      rm -f /lib/systemd/system/anaconda.target.wants/*; \
+    elif [ -f /etc/debian_version ]; then \
+      apt-get update && \
+      apt-get install -y systemd systemd-sysv python3 sudo && \
+      apt-get clean && \
+      rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
+    elif [ -f /etc/arch-release ]; then \
+      pacman -Sy --noconfirm systemd python sudo; \
+      (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+      rm -f /lib/systemd/system/multi-user.target.wants/*;\
+      rm -f /etc/systemd/system/*.wants/*;\
+      rm -f /lib/systemd/system/local-fs.target.wants/*; \
+      rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+      rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+      rm -f /lib/systemd/system/basic.target.wants/*;\
+      rm -f /lib/systemd/system/anaconda.target.wants/*; \
+    fi
+
+# Start systemd
+CMD ["/lib/systemd/systemd"]
