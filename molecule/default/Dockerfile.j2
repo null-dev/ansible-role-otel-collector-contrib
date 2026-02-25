@@ -1,8 +1,4 @@
-{% if lookup('env', 'MOLECULE_IMAGE') %}
 FROM {{ lookup('env', 'MOLECULE_IMAGE') }}
-{% else %}
-FROM geerlingguy/docker-ubuntu2204-ansible:latest
-{% endif %}
 
 ENV container=docker
 
@@ -42,18 +38,7 @@ RUN if [ -f /etc/redhat-release ]; then \
       rm -f /lib/systemd/system/anaconda.target.wants/*; \
     fi
 
-# Ensure sudo is passwordless
-RUN echo "ALL ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-# Create ansible user and patch PAM if files exist
-RUN if [ -f /etc/redhat-release ]; then \
-      for pam_file in sshd crond login su sudo; do \
-        if [ -f "/etc/pam.d/$pam_file" ]; then \
-          sed -i 's/^session\s\+required\s\+pam_loginuid.so/# &/' "/etc/pam.d/$pam_file"; \
-        fi; \
-      done; \
-    fi
-
+# Create ansible user
 RUN useradd -m -s /bin/bash ansible && \
     echo "ansible ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
