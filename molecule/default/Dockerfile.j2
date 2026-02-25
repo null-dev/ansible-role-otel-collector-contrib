@@ -22,6 +22,13 @@ RUN if [ -f /etc/redhat-release ]; then \
       apt-get install -y systemd systemd-sysv python3 sudo ca-certificates && \
       apt-get clean && \
       rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
+      rm -f /lib/systemd/system/multi-user.target.wants/* \
+      /etc/systemd/system/*.wants/* \
+      /lib/systemd/system/local-fs.target.wants/* \
+      /lib/systemd/system/sockets.target.wants/*udev* \
+      /lib/systemd/system/sockets.target.wants/*initctl* \
+      /lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup* \
+      /lib/systemd/system/systemd-update-utmp*; \
     elif [ -f /etc/arch-release ]; then \
       pacman -Sy --noconfirm systemd python sudo ca-certificates; \
       (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
@@ -32,6 +39,13 @@ RUN if [ -f /etc/redhat-release ]; then \
       rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
       rm -f /lib/systemd/system/basic.target.wants/*;\
       rm -f /lib/systemd/system/anaconda.target.wants/*; \
+    fi
+
+# Ensure /lib/systemd/systemd exists (symlink if needed) so we can use a consistent command
+RUN if [ ! -e /lib/systemd/systemd ]; then \
+      if [ -e /usr/lib/systemd/systemd ]; then \
+        ln -s /usr/lib/systemd/systemd /lib/systemd/systemd; \
+      fi; \
     fi
 
 # Start systemd
