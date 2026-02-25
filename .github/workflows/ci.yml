@@ -16,6 +16,7 @@ jobs:
         distro:
           - ubuntu2204
           - debian12
+          - debian12-binary
           - fedora43
           - archlinux
 
@@ -33,13 +34,16 @@ jobs:
           sudo systemctl disable --now apparmor.service || true
 
       - name: Run Molecule tests
-        run: molecule test --all
+        run: >-
+          molecule test --all
+          ${{ matrix.distro == 'debian12-binary' && '-- -e otel_collector_contrib_install_method=binary' || '' }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
           MOLECULE_IMAGE: >-
             ${{
               matrix.distro == 'ubuntu2204' && 'ubuntu:22.04' ||
               matrix.distro == 'debian12' && 'debian:12' ||
+              matrix.distro == 'debian12-binary' && 'debian:12' ||
               matrix.distro == 'fedora43' && 'fedora:43' ||
               matrix.distro == 'archlinux' && 'archlinux:latest'
             }}
