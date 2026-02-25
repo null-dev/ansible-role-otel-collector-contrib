@@ -5,6 +5,7 @@ driver:
   name: docker
 platforms:
   - name: instance
+    image: ${MOLECULE_IMAGE}
     dockerfile: Dockerfile.j2
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
