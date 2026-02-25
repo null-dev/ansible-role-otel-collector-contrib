@@ -34,10 +34,6 @@ Default: `amd64` or `arm64` based on system architecture.
 The system user to run the collector as.
 Default: `"otelcol-contrib"`
 
-### `otel_collector_contrib_group`
-The system group for the collector user.
-Default: `"otelcol-contrib"`
-
 ### `otel_collector_contrib_service_name`
 The name of the systemd service.
 Default: `"otelcol-contrib"`
