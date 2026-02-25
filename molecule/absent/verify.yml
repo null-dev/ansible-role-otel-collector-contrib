@@ -2,8 +2,6 @@
 - name: Verify
   hosts: all
   become: true
-  vars:
-    otel_collector_contrib_service_name: "otelcol-contrib"
   tasks:
     - name: Check for otelcol-contrib process
       ansible.builtin.command: pgrep -f otelcol-contrib
@@ -27,6 +25,6 @@
 
     - name: Check if service is loaded
       ansible.builtin.systemd:
-        name: "{{ otel_collector_contrib_service_name }}"
+        name: otelcol-contrib
       register: service_status
       failed_when: service_status.status.LoadState != 'not-found'
