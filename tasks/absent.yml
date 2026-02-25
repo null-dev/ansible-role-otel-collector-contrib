@@ -38,3 +38,8 @@
     state: absent
   notify: systemd daemon-reload
   when: otel_collector_contrib_install_method == 'binary'
+
+- name: Remove OpenTelemetry Collector configuration directory
+  ansible.builtin.file:
+    path: /etc/otelcol-contrib
+    state: absent
