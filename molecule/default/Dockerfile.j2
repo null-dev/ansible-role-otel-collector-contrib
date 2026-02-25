@@ -5,37 +5,19 @@ ENV container=docker
 # Install systemd, python, ca-certificates, procps, and sudo if not present
 RUN if [ -f /etc/redhat-release ]; then \
       dnf -y update; dnf -y install systemd python3 sudo ca-certificates procps-ng; dnf clean all; \
-      (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
-      rm -f /lib/systemd/system/multi-user.target.wants/*;\
-      rm -f /etc/systemd/system/*.wants/*;\
-      rm -f /lib/systemd/system/local-fs.target.wants/*; \
-      rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
-      rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
-      rm -f /lib/systemd/system/basic.target.wants/*;\
-      rm -f /lib/systemd/system/anaconda.target.wants/*; \
     elif [ -f /etc/debian_version ]; then \
       apt-get update && \
       apt-get install -y systemd systemd-sysv python3 sudo ca-certificates procps && \
       apt-get clean && \
       rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
-      rm -f /lib/systemd/system/multi-user.target.wants/* \
-      /etc/systemd/system/*.wants/* \
-      /lib/systemd/system/local-fs.target.wants/* \
-      /lib/systemd/system/sockets.target.wants/*udev* \
-      /lib/systemd/system/sockets.target.wants/*initctl* \
-      /lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup* \
-      /lib/systemd/system/systemd-update-utmp*; \
     elif [ -f /etc/arch-release ]; then \
       pacman -Sy --noconfirm systemd python sudo ca-certificates procps-ng; \
-      (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
-      rm -f /lib/systemd/system/multi-user.target.wants/*;\
-      rm -f /etc/systemd/system/*.wants/*;\
-      rm -f /lib/systemd/system/local-fs.target.wants/*; \
-      rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
-      rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
-      rm -f /lib/systemd/system/basic.target.wants/*;\
-      rm -f /lib/systemd/system/anaconda.target.wants/*; \
     fi
+
+# Mask unwanted services globally
+RUN systemctl mask systemd-tmpfiles-setup.service systemd-update-utmp.service 2>/dev/null || \
+    (ln -sf /dev/null /etc/systemd/system/systemd-tmpfiles-setup.service && \
+     ln -sf /dev/null /etc/systemd/system/systemd-update-utmp.service)
 
 # Create ansible user
 RUN useradd -m -s /bin/bash ansible && \
