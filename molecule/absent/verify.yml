@@ -25,12 +25,6 @@
       changed_when: false
       failed_when: binary_check.rc == 0
 
-    - name: Check if service file exists (Systemd)
-      ansible.builtin.stat:
-        path: "/etc/systemd/system/{{ otel_collector_contrib_service_name }}.service"
-      register: service_file_stat
-      failed_when: service_file_stat.stat.exists
-
     - name: Check if service is loaded
       ansible.builtin.systemd:
         name: "{{ otel_collector_contrib_service_name }}"
