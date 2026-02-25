@@ -9,14 +9,14 @@ on:
 
 jobs:
   molecule:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
         distro:
           - ubuntu2204
           - debian12
-          # - fedora43
+          - fedora43
           - archlinux
 
     steps:
