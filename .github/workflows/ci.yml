@@ -16,7 +16,7 @@ jobs:
         distro:
           - ubuntu2204
           - debian12
-          # - fedora43
+          - fedora43
           - archlinux
 
     steps:
@@ -25,6 +25,12 @@ jobs:
 
       - name: Install dependencies with mise
         uses: jdx/mise-action@v3
+
+      # Workaround bug with Ubuntu runners: https://github.com/fedora-cloud/docker-brew-fedora/issues/117
+      - name: Disable AppArmor
+        run: |
+          sudo aa-teardown || true
+          sudo systemctl disable --now apparmor.service || true
 
       - name: Run Molecule tests
         run: molecule test
