@@ -61,7 +61,7 @@
 - name: Copy systemd service file
   ansible.builtin.template:
     src: otelcol-contrib.service.j2
-    dest: "{{ otel_collector_contrib_build_dir }}/otelcol-contrib.service"
+    dest: "{{ otel_collector_contrib_build_dir }}/{{ otel_collector_contrib_service_name }}.service"
     mode: '0644'
   become: false
   when: build_needed

@@ -23,10 +23,14 @@
       changed_when: false
       failed_when: binary_check.rc == 0
 
-    - name: Check if binary exists (Binary install path)
+    - name: Check if service file exists (Systemd)
       ansible.builtin.stat:
-        path: "{{ otel_collector_contrib_binary_install_dir }}/otelcol-contrib"
-      register: binary_stat
-      failed_when: binary_stat.stat.exists
-      vars:
-        otel_collector_contrib_binary_install_dir: "/usr/local/bin" # Default fallback
+        path: "/etc/systemd/system/{{ otel_collector_contrib_service_name }}.service"
+      register: service_file_stat
+      failed_when: service_file_stat.stat.exists
+
+    - name: Check if service is loaded
+      ansible.builtin.systemd:
+        name: "{{ otel_collector_contrib_service_name }}"
+      register: service_status
+      failed_when: service_status.status.LoadState != 'not-found'
