@@ -28,9 +28,11 @@
     state: absent
   when: otel_collector_contrib_install_method == 'rpm'
 
-- name: Remove OpenTelemetry Collector package (Arch)
+- name: Remove OpenTelemetry Collector packages (Arch)
   community.general.pacman:
-    name: otelcol-contrib
+    name:
+      - otelcol-contrib
+      - otelcol-contrib-debug
     state: absent
   when: otel_collector_contrib_install_method == 'pacman'
 

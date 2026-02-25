@@ -73,9 +73,15 @@
   become: false
   when: build_needed
 
-- name: Install built package
+- name: Assert two packages found (main and debug)
+  ansible.builtin.assert:
+    that: built_package.matched == 2
+    fail_msg: "Expected 2 packages (main and debug), found {{ built_package.matched }}"
+  when: build_needed
+
+- name: Install built packages
   ansible.builtin.command:
-    cmd: "pacman -U --noconfirm {{ built_package.files[0].path }}"
+    cmd: "pacman -U --noconfirm {{ built_package.files | map(attribute='path') | join(' ') }}"
   become: true
   changed_when: true
   when: build_needed
@@ -95,18 +101,6 @@
     state: absent
   become: true
   when: build_needed
-
-# Debugging: Check where it installed
-- name: Debug installed files
-  ansible.builtin.command: pacman -Ql otelcol-contrib
-  register: pacman_files
-  changed_when: false
-  become: false
-  failed_when: false
-
-- name: Show installed files
-  ansible.builtin.debug:
-    var: pacman_files.stdout_lines
 
 # Debugging: Ensure binary exists and has correct permissions
 - name: Verify binary installation
