@@ -3,14 +3,14 @@ otel_collector_contrib_version: "0.119.0"
 otel_collector_contrib_state: "present"
 
 # Architecture mapping
-otel_collector_contrib_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' if ansible_architecture == 'aarch64' else ansible_architecture }}"
+otel_collector_contrib_arch: "{{ 'amd64' if ansible_facts['architecture'] == 'x86_64' else 'arm64' if ansible_facts['architecture'] == 'aarch64' else ansible_facts['architecture'] }}"
 
 # Installation method
 otel_collector_contrib_install_method: >-
   {{
-    'deb' if ansible_os_family == 'Debian' else
-    'rpm' if ansible_os_family == 'RedHat' else
-    'pacman' if ansible_os_family == 'Archlinux' else
+    'deb' if ansible_facts['os_family'] == 'Debian' else
+    'rpm' if ansible_facts['os_family'] == 'RedHat' else
+    'pacman' if ansible_facts['os_family'] == 'Archlinux' else
     'binary'
   }}
 
