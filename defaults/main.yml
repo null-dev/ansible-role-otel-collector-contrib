@@ -1,0 +1,46 @@
+---
+otel_collector_contrib_version: "0.119.0"
+otel_collector_contrib_state: "present"
+
+# Architecture mapping
+otel_collector_contrib_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' if ansible_architecture == 'aarch64' else ansible_architecture }}"
+
+# OS specific variables
+otel_collector_contrib_os_type: "{{ ansible_system | lower }}"
+
+# Binary installation (Arch)
+otel_collector_contrib_binary_install_dir: "/usr/local/bin"
+otel_collector_contrib_user: "otelcol-contrib"
+otel_collector_contrib_group: "otelcol-contrib"
+
+# Configuration
+otel_collector_contrib_config:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "0.0.0.0:4317"
+        http:
+          endpoint: "0.0.0.0:4318"
+  processors:
+    batch:
+  exporters:
+    debug:
+      verbosity: basic
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [batch]
+        exporters: [debug]
+      metrics:
+        receivers: [otlp]
+        processors: [batch]
+        exporters: [debug]
+      logs:
+        receivers: [otlp]
+        processors: [batch]
+        exporters: [debug]
+
+# Service name
+otel_collector_contrib_service_name: "otelcol-contrib"

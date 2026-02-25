@@ -1,0 +1,6 @@
+---
+- name: Restart otelcol-contrib
+  ansible.builtin.service:
+    name: "{{ otel_collector_contrib_service_name }}"
+    state: restarted
+    enabled: true

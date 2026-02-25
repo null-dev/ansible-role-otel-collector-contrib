@@ -1,0 +1,66 @@
+---
+- name: Determine installation method
+  ansible.builtin.set_fact:
+    otel_collector_contrib_install_method: >-
+      {{
+        'deb' if ansible_os_family == 'Debian' else
+        'rpm' if ansible_os_family == 'RedHat' else
+        'binary'
+      }}
+
+- name: Stop and disable OpenTelemetry Collector service
+  ansible.builtin.service:
+    name: "{{ otel_collector_contrib_service_name }}"
+    state: stopped
+    enabled: false
+  failed_when: false
+
+- name: Remove OpenTelemetry Collector Contrib .deb package
+  ansible.builtin.apt:
+    name: otelcol-contrib
+    state: absent
+  when: otel_collector_contrib_install_method == 'deb'
+
+- name: Remove OpenTelemetry Collector Contrib .rpm package
+  ansible.builtin.dnf:
+    name: otelcol-contrib
+    state: absent
+  when: otel_collector_contrib_install_method == 'rpm'
+
+- name: Remove binary installation files
+  when: otel_collector_contrib_install_method == 'binary'
+  block:
+    - name: Remove binary
+      ansible.builtin.file:
+        path: "{{ otel_collector_contrib_binary_install_dir }}/{{ otel_collector_contrib_service_name }}"
+        state: absent
+
+    - name: Remove Systemd Service
+      ansible.builtin.file:
+        path: "/etc/systemd/system/{{ otel_collector_contrib_service_name }}.service"
+        state: absent
+
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+- name: Remove configuration directory
+  ansible.builtin.file:
+    path: /etc/otelcol-contrib
+    state: absent
+
+- name: Remove temporary download directory
+  ansible.builtin.file:
+    path: "/tmp/otel-install-{{ otel_collector_contrib_version }}"
+    state: absent
+
+- name: Remove otel user
+  ansible.builtin.user:
+    name: "{{ otel_collector_contrib_user }}"
+    state: absent
+    remove: true
+
+- name: Remove otel group
+  ansible.builtin.group:
+    name: "{{ otel_collector_contrib_group }}"
+    state: absent

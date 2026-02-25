@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  tasks:
+    - name: Include otel_collector_contrib
+      ansible.builtin.include_role:
+        name: otel_collector_contrib

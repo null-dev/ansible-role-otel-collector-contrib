@@ -1,0 +1,28 @@
+---
+- name: Handle absent state
+  ansible.builtin.include_tasks: absent.yml
+  when: otel_collector_contrib_state == 'absent'
+
+- name: Perform installation and configuration
+  when: otel_collector_contrib_state == 'present'
+  block:
+    - name: Determine installation method
+      ansible.builtin.set_fact:
+        otel_collector_contrib_install_method: >-
+          {{
+            'deb' if ansible_os_family == 'Debian' else
+            'rpm' if ansible_os_family == 'RedHat' else
+            'binary'
+          }}
+
+    - name: Include OS-specific installation tasks
+      ansible.builtin.include_tasks: "install-{{ otel_collector_contrib_install_method }}.yml"
+
+    - name: Configure OpenTelemetry Collector
+      ansible.builtin.include_tasks: configure.yml
+
+    - name: Ensure OpenTelemetry Collector service is running
+      ansible.builtin.service:
+        name: "{{ otel_collector_contrib_service_name }}"
+        state: started
+        enabled: true
