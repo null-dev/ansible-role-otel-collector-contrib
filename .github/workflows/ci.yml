@@ -26,14 +26,13 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-        with:
-          path: otel_collector_contrib
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
+      # TODO: Install deps with mise
       - name: Install dependencies
         run: |
           pip install ansible molecule molecule-plugins[docker] docker

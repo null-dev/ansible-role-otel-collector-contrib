@@ -1,0 +1,11 @@
+[tools]
+pipx = "latest"
+# If you can run the "adt" command but can't run other ansible commands such as "ansible-playbook"
+# or "molecule", your ansible-dev-tools installation was not installed with the --include-deps option.
+# You should re-install it by running "mise install --force pipx:ansible-dev-tools" inside this directory.
+"pipx:ansible-dev-tools" = { version = "latest", uvx = "false", pipx_args = "--preinstall molecule-plugins[containers,podman,docker] --include-deps" }
+
+[hooks]
+postinstall = '''
+ansible-galaxy install -r requirements.yml
+'''
