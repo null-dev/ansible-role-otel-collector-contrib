@@ -13,7 +13,6 @@ RUN if [ -f /etc/redhat-release ]; then \
       rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
       rm -f /lib/systemd/system/basic.target.wants/*;\
       rm -f /lib/systemd/system/anaconda.target.wants/*; \
-      if [ -f /etc/pam.d/sudo ]; then sed -i 's/^session\s\+required\s\+pam_loginuid.so/# &/' /etc/pam.d/sudo; fi; \
     elif [ -f /etc/debian_version ]; then \
       apt-get update && \
       apt-get install -y systemd systemd-sysv python3 sudo ca-certificates procps && \
