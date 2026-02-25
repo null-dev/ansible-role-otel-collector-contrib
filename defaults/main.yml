@@ -1,5 +1,5 @@
 ---
-otel_collector_contrib_version: "0.119.0"
+otel_collector_contrib_version: "0.146.0"
 otel_collector_contrib_state: "present"
 
 # Architecture mapping
