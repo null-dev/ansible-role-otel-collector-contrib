@@ -41,6 +41,16 @@ RUN if [ -f /etc/redhat-release ]; then \
 RUN useradd -m -s /bin/bash ansible && \
     echo "ansible ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+# PAM fix for RedHat-based systems to allow sudo
+RUN if [ -f /etc/redhat-release ]; then \
+      if [ -f /etc/pam.d/sudo ]; then \
+        sed -i 's/^.*pam_loginuid.so.*$/session optional pam_loginuid.so/' /etc/pam.d/sudo; \
+      fi; \
+      if [ -f /etc/pam.d/su ]; then \
+        sed -i 's/^.*pam_loginuid.so.*$/session optional pam_loginuid.so/' /etc/pam.d/su; \
+      fi; \
+    fi
+
 # Ensure /lib/systemd/systemd exists (symlink if needed) so we can use a consistent command
 RUN if [ ! -e /lib/systemd/systemd ]; then \
       if [ -e /usr/lib/systemd/systemd ]; then \
