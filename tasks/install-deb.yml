@@ -1,12 +1,6 @@
 ---
-- name: Download OpenTelemetry Collector Contrib .deb package
-  ansible.builtin.get_url:
-    url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otel_collector_contrib_version }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.deb"
-    dest: "/tmp/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.deb"
-    mode: '0644'
-
 - name: Install OpenTelemetry Collector Contrib .deb package
   ansible.builtin.apt:
-    deb: "/tmp/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.deb"
+    deb: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otel_collector_contrib_version }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.deb"
     state: present
   notify: restart otelcol-contrib
