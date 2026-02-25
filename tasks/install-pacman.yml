@@ -22,7 +22,7 @@
     build_needed: >-
       {{
         pacman_query.rc != 0 or
-        otel_collector_contrib_version ~ '-1' not in pacman_query.stdout
+        pacman_query.stdout.split()[1] != otel_collector_contrib_version ~ '-1'
       }}
 
 - name: Create build directory
