@@ -96,6 +96,18 @@
   become: true
   when: build_needed
 
+# Debugging: Check where it installed
+- name: Debug installed files
+  ansible.builtin.command: pacman -Ql otelcol-contrib
+  register: pacman_files
+  changed_when: false
+  become: false
+  failed_when: false
+
+- name: Show installed files
+  ansible.builtin.debug:
+    var: pacman_files.stdout_lines
+
 # Debugging: Ensure binary exists and has correct permissions
 - name: Verify binary installation
   ansible.builtin.stat:
