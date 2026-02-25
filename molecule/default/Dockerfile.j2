@@ -14,7 +14,7 @@ RUN if [ -f /etc/redhat-release ]; then \
       pacman -Sy --noconfirm systemd python sudo ca-certificates procps-ng; \
     fi
 
-# Mask unwanted services globally
+# Mask systemd services that don't work in containers
 RUN systemctl mask systemd-tmpfiles-setup.service systemd-update-utmp.service
 
 # Create ansible user
