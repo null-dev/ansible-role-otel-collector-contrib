@@ -1,0 +1,30 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  tasks:
+    - name: Check for otelcol-contrib process
+      ansible.builtin.command: pgrep -f otelcol-contrib
+      register: pgrep_result
+      ignore_errors: true
+      changed_when: false
+      failed_when: pgrep_result.rc == 0
+
+    - name: Check if config directory exists
+      ansible.builtin.stat:
+        path: /etc/otelcol-contrib
+      register: config_dir
+      failed_when: config_dir.stat.exists
+
+    - name: Check if binary exists (Debian/RedHat/Arch)
+      ansible.builtin.command: which otelcol-contrib
+      register: binary_check
+      ignore_errors: true
+      changed_when: false
+      failed_when: binary_check.rc == 0
+
+    - name: Check if service is loaded
+      ansible.builtin.systemd:
+        name: otelcol-contrib
+      register: service_status
+      failed_when: service_status.status.LoadState != 'not-found'

@@ -33,7 +33,7 @@ jobs:
           sudo systemctl disable --now apparmor.service || true
 
       - name: Run Molecule tests
-        run: molecule test
+        run: molecule test --all
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
           MOLECULE_IMAGE: >-
