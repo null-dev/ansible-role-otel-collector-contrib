@@ -1,0 +1,33 @@
+---
+galaxy_info:
+  role_name: otel_collector_contrib
+  namespace: null_dev
+  author: null-dev
+  description: Installs and configures the OpenTelemetry Collector Contrib distribution.
+  company: N/A
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: ArchLinux
+      versions:
+        - all
+  galaxy_tags:
+    - monitoring
+    - observability
+    - opentelemetry
+    - otel
+    - collector
+
+dependencies: []

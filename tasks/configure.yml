@@ -1,0 +1,17 @@
+---
+- name: Create configuration directory
+  ansible.builtin.file:
+    path: /etc/otelcol-contrib
+    state: directory
+    owner: "{{ otel_collector_contrib_user }}"
+    group: "{{ otel_collector_contrib_user }}"
+    mode: '0755'
+
+- name: Create configuration file
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: /etc/otelcol-contrib/config.yaml
+    owner: "{{ otel_collector_contrib_user }}"
+    group: "{{ otel_collector_contrib_user }}"
+    mode: '0644'
+  notify: restart otelcol-contrib

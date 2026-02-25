@@ -1,0 +1,49 @@
+---
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  molecule:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        distro:
+          - ubuntu2204
+          - debian12
+          - debian12-binary
+          - fedora43
+          - archlinux
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies with mise
+        uses: jdx/mise-action@v3
+
+      # Workaround bug with Ubuntu runners: https://github.com/fedora-cloud/docker-brew-fedora/issues/117
+      - name: Disable AppArmor
+        run: |
+          sudo aa-teardown || true
+          sudo systemctl disable --now apparmor.service || true
+
+      - name: Run Molecule tests
+        run: >-
+          molecule test --all
+          ${{ matrix.distro == 'debian12-binary' && '-- -e otel_collector_contrib_install_method=binary' || '' }}
+        env:
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+          MOLECULE_IMAGE: >-
+            ${{
+              matrix.distro == 'ubuntu2204' && 'ubuntu:22.04' ||
+              matrix.distro == 'debian12' && 'debian:12' ||
+              matrix.distro == 'debian12-binary' && 'debian:12' ||
+              matrix.distro == 'fedora43' && 'fedora:43' ||
+              matrix.distro == 'archlinux' && 'archlinux:latest'
+            }}

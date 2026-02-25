@@ -1,0 +1,45 @@
+---
+- name: Stop and disable OpenTelemetry Collector service
+  ansible.builtin.service:
+    name: "{{ otel_collector_contrib_service_name }}"
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Remove OpenTelemetry Collector package (Debian)
+  ansible.builtin.apt:
+    name: otelcol-contrib
+    state: absent
+  when: otel_collector_contrib_install_method == 'deb'
+
+- name: Remove OpenTelemetry Collector package (RedHat)
+  ansible.builtin.dnf:
+    name: otelcol-contrib
+    state: absent
+  when: otel_collector_contrib_install_method == 'rpm'
+
+- name: Remove OpenTelemetry Collector packages (Arch)
+  community.general.pacman:
+    name:
+      - otelcol-contrib
+      - otelcol-contrib-debug
+    state: absent
+  when: otel_collector_contrib_install_method == 'pacman'
+
+- name: Remove OpenTelemetry Collector binary (binary)
+  ansible.builtin.file:
+    path: "{{ otel_collector_contrib_binary_install_dir }}/{{ otel_collector_contrib_service_name }}"
+    state: absent
+  when: otel_collector_contrib_install_method == 'binary'
+
+- name: Remove systemd service file (binary)
+  ansible.builtin.file:
+    path: /etc/systemd/system/{{ otel_collector_contrib_service_name }}.service
+    state: absent
+  notify: systemd daemon-reload
+  when: otel_collector_contrib_install_method == 'binary'
+
+- name: Remove OpenTelemetry Collector configuration directory
+  ansible.builtin.file:
+    path: /etc/otelcol-contrib
+    state: absent

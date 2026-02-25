@@ -1,0 +1,22 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  tasks:
+    - name: Check if otelcol-contrib user exists
+      ansible.builtin.command: getent passwd otelcol-contrib
+      changed_when: false
+
+    - name: Check for otelcol-contrib process
+      ansible.builtin.command: pgrep -f otelcol-contrib
+      changed_when: false
+
+    - name: Check if port 4317 (gRPC) is listening
+      ansible.builtin.wait_for:
+        port: 4317
+        timeout: 30
+
+    - name: Check if port 4318 (HTTP) is listening
+      ansible.builtin.wait_for:
+        port: 4318
+        timeout: 30
