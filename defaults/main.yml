@@ -8,6 +8,15 @@ otel_collector_contrib_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' els
 # OS specific variables
 otel_collector_contrib_os_type: "{{ ansible_system | lower }}"
 
+# Installation method
+otel_collector_contrib_install_method: >-
+  {{
+    'deb' if ansible_os_family == 'Debian' else
+    'rpm' if ansible_os_family == 'RedHat' else
+    'pacman' if ansible_os_family == 'Archlinux' else
+    'binary'
+  }}
+
 # Binary installation (Arch)
 otel_collector_contrib_binary_install_dir: "/usr/local/bin"
 otel_collector_contrib_user: "otelcol-contrib"
