@@ -15,9 +15,7 @@ RUN if [ -f /etc/redhat-release ]; then \
     fi
 
 # Mask unwanted services globally
-RUN systemctl mask systemd-tmpfiles-setup.service systemd-update-utmp.service 2>/dev/null || \
-    (ln -sf /dev/null /etc/systemd/system/systemd-tmpfiles-setup.service && \
-     ln -sf /dev/null /etc/systemd/system/systemd-update-utmp.service)
+RUN systemctl mask systemd-tmpfiles-setup.service systemd-update-utmp.service
 
 # Create ansible user
 RUN useradd -m -s /bin/bash ansible && \
