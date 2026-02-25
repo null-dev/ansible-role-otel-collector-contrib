@@ -4,3 +4,7 @@
     name: "{{ otel_collector_contrib_service_name }}"
     state: restarted
     enabled: true
+
+- name: systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true

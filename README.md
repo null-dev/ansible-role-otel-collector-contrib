@@ -72,4 +72,4 @@ None.
 
 ## License
 
-MIT / BSD
+MIT
