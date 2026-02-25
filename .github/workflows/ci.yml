@@ -23,15 +23,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.12"
-
-      # TODO: Install deps with mise
-      - name: Install dependencies
-        run: |
-          pip install ansible molecule molecule-plugins[docker] docker
+      - name: Install dependencies with mise
+        uses: jdx/mise-action@v3
 
       - name: Run Molecule tests
         run: molecule test

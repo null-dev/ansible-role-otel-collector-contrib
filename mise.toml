@@ -9,3 +9,6 @@ pipx = "latest"
 postinstall = '''
 ansible-galaxy install -r requirements.yml
 '''
+
+[settings]
+experimental = true
