@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: otel_collector_contrib
-  namespace: jules
+  namespace: null_dev
   author: Jules
   description: Installs and configures the OpenTelemetry Collector Contrib distribution.
   company: N/A

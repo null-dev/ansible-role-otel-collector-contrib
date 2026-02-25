@@ -12,6 +12,7 @@
           {{
             'deb' if ansible_os_family == 'Debian' else
             'rpm' if ansible_os_family == 'RedHat' else
+            'pacman' if ansible_os_family == 'Archlinux' else
             'binary'
           }}
 

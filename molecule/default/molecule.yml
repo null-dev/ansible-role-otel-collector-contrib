@@ -7,6 +7,7 @@ platforms:
   - name: instance
     image: ${MOLECULE_IMAGE}
     dockerfile: Dockerfile.j2
+    # Below changes are necessary to get systemd to run in a container
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
     command: /lib/systemd/systemd
@@ -19,6 +20,11 @@ platforms:
 provisioner:
   name: ansible
   env:
+    # Workaround this bug: https://github.com/ansible/molecule/issues/4391
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/..
+  inventory:
+    group_vars:
+      all:
+        ansible_user: ansible
 verifier:
   name: ansible
