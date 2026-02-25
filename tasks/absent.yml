@@ -26,14 +26,15 @@
     state: absent
   when: otel_collector_contrib_install_method == 'pacman'
 
-- name: Remove OpenTelemetry Collector binary
+- name: Remove OpenTelemetry Collector binary (binary)
   ansible.builtin.file:
     path: "{{ otel_collector_contrib_binary_install_dir }}/{{ otel_collector_contrib_service_name }}"
     state: absent
   when: otel_collector_contrib_install_method == 'binary'
 
-- name: Remove systemd service file
+- name: Remove systemd service file (binary)
   ansible.builtin.file:
     path: /etc/systemd/system/{{ otel_collector_contrib_service_name }}.service
     state: absent
   notify: systemd daemon-reload
+  when: otel_collector_contrib_install_method == 'binary'
