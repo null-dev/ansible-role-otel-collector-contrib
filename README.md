@@ -29,7 +29,7 @@ None.
 
 ## License
 
-MIT / BSD
+MIT
 
 ## Author Information
 
