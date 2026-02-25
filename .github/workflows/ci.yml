@@ -9,7 +9,7 @@ on:
 
 jobs:
   molecule:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -32,6 +32,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install ansible molecule molecule-plugins[docker] docker
+
+      - name: Disable AppArmor
+        run: |
+          sudo aa-teardown || true
+          sudo systemctl disable --now apparmor.service || true
 
       - name: Run Molecule tests
         run: molecule test
