@@ -17,7 +17,7 @@ RUN if [ -f /etc/redhat-release ]; then \
       rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
       rm -f /lib/systemd/system/basic.target.wants/*;\
       rm -f /lib/systemd/system/anaconda.target.wants/*; \
-      sed -i 's/^session\s\+required\s\+pam_loginuid.so/# &/' /etc/pam.d/sudo; \
+      if [ -f /etc/pam.d/sudo ]; then sed -i 's/^session\s\+required\s\+pam_loginuid.so/# &/' /etc/pam.d/sudo; fi; \
     elif [ -f /etc/debian_version ]; then \
       apt-get update && \
       apt-get install -y systemd systemd-sysv python3 sudo ca-certificates procps && \
@@ -45,19 +45,13 @@ RUN if [ -f /etc/redhat-release ]; then \
 # Ensure sudo is passwordless
 RUN echo "ALL ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-# Create ansible user
-# For Fedora, we explicitly avoid using the wheel group in the user creation command if we just want sudo
-# But some images might require it for PAM stack to work correctly.
-# The issue 'sudo: PAM account management error: Authentication service cannot retrieve authentication info'
-# often relates to sssd not running or missing config.
-# Attempting to fix by ensuring the user has a shadow entry (useradd does this)
-# and possibly touching /var/lib/sss/pipes/private/pam if sssd is involved (unlikely in minimal containers).
-# A common workaround for Fedora/CentOS containers is to remove pam_loginuid from common-session too.
+# Create ansible user and patch PAM if files exist
 RUN if [ -f /etc/redhat-release ]; then \
-      sed -i 's/^session\s\+required\s\+pam_loginuid.so/# &/' /etc/pam.d/sshd; \
-      sed -i 's/^session\s\+required\s\+pam_loginuid.so/# &/' /etc/pam.d/crond; \
-      sed -i 's/^session\s\+required\s\+pam_loginuid.so/# &/' /etc/pam.d/login; \
-      sed -i 's/^session\s\+required\s\+pam_loginuid.so/# &/' /etc/pam.d/su; \
+      for pam_file in sshd crond login su; do \
+        if [ -f "/etc/pam.d/$pam_file" ]; then \
+          sed -i 's/^session\s\+required\s\+pam_loginuid.so/# &/' "/etc/pam.d/$pam_file"; \
+        fi; \
+      done; \
     fi
 
 RUN useradd -m -s /bin/bash ansible && \

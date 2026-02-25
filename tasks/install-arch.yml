@@ -95,3 +95,17 @@
     state: absent
   become: true
   when: build_needed
+
+# Debugging: Ensure binary exists and has correct permissions
+- name: Verify binary installation
+  ansible.builtin.stat:
+    path: "{{ otel_collector_contrib_binary_install_dir }}/otelcol-contrib"
+  register: binary_stat
+  failed_when: not binary_stat.stat.exists
+
+# Fix permissions if package didn't set them (though makepkg should)
+- name: Ensure binary execution permissions
+  ansible.builtin.file:
+    path: "{{ otel_collector_contrib_binary_install_dir }}/otelcol-contrib"
+    mode: '0755'
+  become: true
