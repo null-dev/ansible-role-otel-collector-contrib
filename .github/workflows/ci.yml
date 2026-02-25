@@ -33,6 +33,7 @@ jobs:
         run: |
           pip install ansible molecule molecule-plugins[docker] docker
 
+      # Workaround bug with Ubuntu runners: https://github.com/fedora-cloud/docker-brew-fedora/issues/117
       - name: Disable AppArmor
         run: |
           sudo aa-teardown || true
