@@ -18,5 +18,5 @@ sha256sums=('SKIP' 'SKIP')
 package() {
   install -Dm755 "${srcdir}/otelcol-contrib" "${pkgdir}{{ otel_collector_contrib_binary_install_dir }}/otelcol-contrib"
   install -Dm644 "${srcdir}/otelcol-contrib.service" "${pkgdir}/usr/lib/systemd/system/{{ otel_collector_contrib_service_name }}.service"
-  install -Dm644 "${srcdir}/sysusers.conf" "${pkgdir}/usr/lib/sysusers.d/{{ otel_collector_contrib_service_name }}.conf"
+  install -Dm644 "${srcdir}/sysusers.conf" "${pkgdir}/usr/lib/sysusers.d/otelcol-contrib.conf"
 }
