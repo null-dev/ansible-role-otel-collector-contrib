@@ -1,7 +1,5 @@
 FROM {{ lookup('env', 'MOLECULE_IMAGE') }}
 
-ENV container=docker
-
 # Install systemd, python, ca-certificates, procps, and sudo if not present
 RUN if [ -f /etc/redhat-release ]; then \
       dnf -y update; dnf -y install systemd python3 sudo ca-certificates procps-ng; dnf clean all; \
