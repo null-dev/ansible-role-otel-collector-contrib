@@ -17,6 +17,7 @@ Default: `"0.119.0"`
 ### `otel_collector_contrib_state`
 The state of the installation. Can be `present` or `absent`.
 Default: `"present"`
+**Note:** When set to `absent`, the OpenTelemetry Collector is uninstalled, but the `otelcol-contrib` user and group are preserved.
 
 ### `otel_collector_contrib_install_method`
 The installation method to use. This is automatically detected based on the OS family, but can be overridden.
@@ -43,7 +44,7 @@ Default: `"otelcol-contrib"`
 
 ### `otel_collector_contrib_config`
 The configuration for the OpenTelemetry Collector. This is a dictionary that maps directly to the collector's YAML configuration.
-Default: A basic configuration with OTLP receivers (gRPC/HTTP), batch processor, and debug exporter.
+Default: A basic configuration with OTLP receivers (gRPC/HTTP), batch processor, and debug exporter. See [defaults/main.yml](defaults/main.yml) for the full default configuration.
 
 ## Supported Platforms & Installation
 
@@ -72,7 +73,3 @@ None.
 ## License
 
 MIT / BSD
-
-## Author Information
-
-This role was created in 2024.
