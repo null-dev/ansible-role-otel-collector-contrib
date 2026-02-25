@@ -6,16 +6,6 @@
 - name: Perform installation and configuration
   when: otel_collector_contrib_state == 'present'
   block:
-    - name: Determine installation method
-      ansible.builtin.set_fact:
-        otel_collector_contrib_install_method: >-
-          {{
-            'deb' if ansible_os_family == 'Debian' else
-            'rpm' if ansible_os_family == 'RedHat' else
-            'pacman' if ansible_os_family == 'Archlinux' else
-            'binary'
-          }}
-
     - name: Include OS-specific installation tasks
       ansible.builtin.include_tasks: "install-{{ otel_collector_contrib_install_method }}.yml"
 
