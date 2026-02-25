@@ -2,6 +2,8 @@
 - name: Verify
   hosts: all
   become: true
+  vars:
+    otel_collector_contrib_service_name: "otelcol-contrib"
   tasks:
     - name: Check for otelcol-contrib process
       ansible.builtin.command: pgrep -f otelcol-contrib
