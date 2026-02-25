@@ -8,11 +8,12 @@ url="https://github.com/open-telemetry/opentelemetry-collector-releases"
 license=('Apache-2.0')
 depends=()
 makedepends=()
-source_x86_64=("${url}/releases/download/v${pkgver}/otelcol-contrib_${pkgver}_linux_amd64.tar.gz")
-source_aarch64=("${url}/releases/download/v${pkgver}/otelcol-contrib_${pkgver}_linux_arm64.tar.gz")
-md5sums_x86_64=('SKIP')
-md5sums_aarch64=('SKIP')
+source_x86_64=("${url}/releases/download/v${pkgver}/otelcol-contrib_${pkgver}_linux_amd64.tar.gz" "otelcol-contrib.service")
+source_aarch64=("${url}/releases/download/v${pkgver}/otelcol-contrib_${pkgver}_linux_arm64.tar.gz" "otelcol-contrib.service")
+sha256sums_x86_64=('SKIP' 'SKIP')
+sha256sums_aarch64=('SKIP' 'SKIP')
 
 package() {
   install -Dm755 "${srcdir}/otelcol-contrib" "${pkgdir}{{ otel_collector_contrib_binary_install_dir }}/otelcol-contrib"
+  install -Dm644 "${srcdir}/otelcol-contrib.service" "${pkgdir}/usr/lib/systemd/system/otelcol-contrib.service"
 }
