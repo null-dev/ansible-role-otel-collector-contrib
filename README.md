@@ -1,6 +1,6 @@
 # Ansible Role: otel_collector_contrib
 
-An Ansible role that installs and configures the OpenTelemetry Collector Contrib distribution.
+An Ansible role that installs and configures the OpenTelemetry Collector (contrib distribution).
 
 ## Requirements
 
@@ -11,8 +11,8 @@ None.
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
 ### `otel_collector_contrib_version`
-The version of the OpenTelemetry Collector Contrib to install.
-Default: `"0.119.0"`
+The [version](https://github.com/open-telemetry/opentelemetry-collector-contrib/releases) of the OpenTelemetry Collector (contrib distribution) to install.
+Default: `"0.146.0"`
 
 ### `otel_collector_contrib_state`
 The state of the installation. Can be `present` or `absent`.
@@ -46,15 +46,10 @@ Default: `"otelcol-contrib"`
 The configuration for the OpenTelemetry Collector. This is a dictionary that maps directly to the collector's YAML configuration.
 Default: A basic configuration with OTLP receivers (gRPC/HTTP), batch processor, and debug exporter. See [defaults/main.yml](defaults/main.yml) for the full default configuration.
 
-## Supported Platforms & Installation
+## Supported Platforms
 
-This role supports the following Linux distributions:
-- **Debian / Ubuntu**: Installs via `.deb` package.
-- **RedHat / CentOS / Fedora**: Installs via `.rpm` package.
-- **Arch Linux**: Builds and installs via `pacman` (requires `base-devel`).
-- **Other Linux**: Downloads the binary release and installs a systemd service.
-
-**Note:** This role requires a systemd-based distribution.
+This role is supported on most systemd-based distributions.
+The installation method is automatically detected based on the distribution, see: [`otel_collector_contrib_install_method`](#otel_collector_contrib_install_method).
 
 ## Dependencies
 
@@ -67,7 +62,7 @@ None.
   roles:
     - role: otel_collector_contrib
       vars:
-        otel_collector_contrib_version: "0.119.0"
+        otel_collector_contrib_version: "0.146.0"
 ```
 
 ## License
