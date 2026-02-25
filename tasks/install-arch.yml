@@ -45,20 +45,16 @@
   ansible.builtin.file:
     path: /tmp/otelcol-contrib_build
     state: directory
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
     mode: '0755'
-  become: true
+  become: false
   when: build_needed
 
 - name: Copy PKGBUILD
   ansible.builtin.template:
     src: PKGBUILD.j2
     dest: /tmp/otelcol-contrib_build/PKGBUILD
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
     mode: '0644'
-  become: true
+  become: false
   when: build_needed
 
 - name: Build package with makepkg
