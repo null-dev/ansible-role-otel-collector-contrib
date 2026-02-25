@@ -31,7 +31,7 @@ The architecture to install. Automatically detected.
 Default: `amd64` or `arm64` based on system architecture.
 
 ### `otel_collector_contrib_user`
-The system user to run the collector as.
+The system user & group to run the collector as.
 Default: `"otelcol-contrib"`
 
 ### `otel_collector_contrib_service_name`
