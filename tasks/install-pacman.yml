@@ -10,23 +10,6 @@
     state: present
   become: true
 
-- name: Create otel group
-  ansible.builtin.group:
-    name: "{{ otel_collector_contrib_group }}"
-    system: true
-    state: present
-  become: true
-
-- name: Create otel user
-  ansible.builtin.user:
-    name: "{{ otel_collector_contrib_user }}"
-    group: "{{ otel_collector_contrib_group }}"
-    system: true
-    shell: /sbin/nologin
-    create_home: false
-    state: present
-  become: true
-
 - name: Check if otelcol-contrib is installed
   ansible.builtin.command: pacman -Q otelcol-contrib
   register: pacman_query
@@ -54,6 +37,14 @@
   ansible.builtin.template:
     src: PKGBUILD.j2
     dest: "{{ otel_collector_contrib_build_dir }}/PKGBUILD"
+    mode: '0644'
+  become: false
+  when: build_needed
+
+- name: Copy sysusers configuration
+  ansible.builtin.template:
+    src: sysusers.conf.j2
+    dest: "{{ otel_collector_contrib_build_dir }}/sysusers.conf"
     mode: '0644'
   become: false
   when: build_needed

@@ -3,6 +3,10 @@
   hosts: all
   become: true
   tasks:
+    - name: Check if otelcol-contrib user exists
+      ansible.builtin.command: getent passwd otelcol-contrib
+      changed_when: false
+
     - name: Check for otelcol-contrib process
       ansible.builtin.command: pgrep -f otelcol-contrib
       changed_when: false
