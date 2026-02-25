@@ -1,0 +1,101 @@
+---
+- name: Set binary install directory for Arch
+  ansible.builtin.set_fact:
+    otel_collector_contrib_binary_install_dir: "/usr/bin"
+
+- name: Install base-devel
+  community.general.pacman:
+    name: base-devel
+    state: present
+  become: true
+
+- name: Create otel group
+  ansible.builtin.group:
+    name: "{{ otel_collector_contrib_group }}"
+    system: true
+    state: present
+  become: true
+
+- name: Create otel user
+  ansible.builtin.user:
+    name: "{{ otel_collector_contrib_user }}"
+    group: "{{ otel_collector_contrib_group }}"
+    system: true
+    shell: /sbin/nologin
+    create_home: false
+    state: present
+  become: true
+
+- name: Check if otelcol-contrib is installed
+  ansible.builtin.command: pacman -Q otelcol-contrib
+  register: pacman_query
+  ignore_errors: true
+  changed_when: false
+  become: false
+
+- name: Determine if build is needed
+  ansible.builtin.set_fact:
+    build_needed: >-
+      {{
+        pacman_query.rc != 0 or
+        otel_collector_contrib_version ~ '-1' not in pacman_query.stdout
+      }}
+
+- name: Create build directory
+  ansible.builtin.file:
+    path: /tmp/otelcol-contrib_build
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0755'
+  become: true
+  when: build_needed
+
+- name: Copy PKGBUILD
+  ansible.builtin.template:
+    src: PKGBUILD.j2
+    dest: /tmp/otelcol-contrib_build/PKGBUILD
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0644'
+  become: true
+  when: build_needed
+
+- name: Build package with makepkg
+  ansible.builtin.command:
+    cmd: makepkg -s --noconfirm
+    chdir: /tmp/otelcol-contrib_build
+  become: false
+  changed_when: true
+  when: build_needed
+
+- name: Find built package
+  ansible.builtin.find:
+    paths: /tmp/otelcol-contrib_build
+    patterns: "otelcol-contrib-*.pkg.tar.zst"
+  register: built_package
+  become: false
+  when: build_needed
+
+- name: Install built package
+  ansible.builtin.command:
+    cmd: "pacman -U --noconfirm {{ built_package.files[0].path }}"
+  become: true
+  changed_when: true
+  when: build_needed
+  notify: restart otelcol-contrib
+
+- name: Install Systemd Service
+  ansible.builtin.template:
+    src: otelcol-contrib.service.j2
+    dest: /etc/systemd/system/{{ otel_collector_contrib_service_name }}.service
+    mode: '0644'
+  become: true
+  notify: restart otelcol-contrib
+
+- name: Cleanup build directory
+  ansible.builtin.file:
+    path: /tmp/otelcol-contrib_build
+    state: absent
+  become: true
+  when: build_needed
