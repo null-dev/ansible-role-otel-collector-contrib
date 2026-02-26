@@ -1,4 +1,5 @@
 ---
+# Note: Any changes to collections here must also be reflected in meta/main.yml
 collections:
   - name: community.general
     version: '>=12.4.0'
