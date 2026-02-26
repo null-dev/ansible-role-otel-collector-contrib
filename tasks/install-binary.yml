@@ -24,7 +24,6 @@
 - name: Debug installed version
   ansible.builtin.debug:
     var: _otel_collector_contrib_version_check
-    verbosity: 2
 
 - name: Install binary
   when: >
