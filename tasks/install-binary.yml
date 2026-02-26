@@ -34,7 +34,7 @@
       ansible.builtin.file:
         path: "/tmp/otel-install-{{ otel_collector_contrib_version }}"
         state: directory
-        mode: '0755'
+        mode: "0755"
       become: false
 
     - name: Download and unarchive OpenTelemetry Collector Contrib
@@ -48,8 +48,8 @@
     - name: Move binary to install directory
       ansible.builtin.copy:
         src: "/tmp/otel-install-{{ otel_collector_contrib_version }}/otelcol-contrib"
-        dest: "{{ otel_collector_contrib_binary_install_dir }}/{{ otel_collector_contrib_service_name }}"
-        mode: '0755'
+        dest: "{{ otel_collector_contrib_binary_install_dir }}/otelcol-contrib"
+        mode: "0755"
         owner: "{{ otel_collector_contrib_user }}"
         group: "{{ otel_collector_contrib_user }}"
         remote_src: true
@@ -66,5 +66,5 @@
   ansible.builtin.template:
     src: otelcol-contrib.service.j2
     dest: /etc/systemd/system/{{ otel_collector_contrib_service_name }}.service
-    mode: '0644'
+    mode: "0644"
   notify: restart otelcol-contrib

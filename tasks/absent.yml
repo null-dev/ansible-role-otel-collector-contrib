@@ -28,7 +28,7 @@
 
 - name: Remove OpenTelemetry Collector binary (binary)
   ansible.builtin.file:
-    path: "{{ otel_collector_contrib_binary_install_dir }}/{{ otel_collector_contrib_service_name }}"
+    path: "{{ otel_collector_contrib_binary_install_dir }}/otelcol-contrib"
     state: absent
   when: otel_collector_contrib_install_method == 'binary'
 
