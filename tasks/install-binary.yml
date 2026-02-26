@@ -14,32 +14,6 @@
     create_home: false
     state: present
 
-- name: Resolve user home directory
-  ansible.builtin.command: echo $HOME
-  changed_when: false
-  become: false
-  register: _otel_user_home_dir
-  when: otel_collector_contrib_download_dir is not defined
-
-- name: Set download directory fact
-  ansible.builtin.set_fact:
-    otel_collector_contrib_download_dir: "{{ _otel_user_home_dir.stdout }}/ansible-persist/otelcol-contrib"
-  when: otel_collector_contrib_download_dir is not defined
-
-- name: Create persistent download directory
-  ansible.builtin.file:
-    path: "{{ otel_collector_contrib_download_dir }}"
-    state: directory
-    mode: '0755'
-  become: false
-
-- name: Download OpenTelemetry Collector Contrib archive
-  ansible.builtin.get_url:
-    url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otel_collector_contrib_version }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.tar.gz"
-    dest: "{{ otel_collector_contrib_download_dir }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.tar.gz"
-    mode: '0644'
-  become: false
-
 - name: Check if binary exists and version matches
   ansible.builtin.command: "{{ otel_collector_contrib_binary_install_dir }}/{{ otel_collector_contrib_service_name }} --version"
   register: _otel_collector_contrib_version_check
@@ -55,7 +29,7 @@
 - name: Install binary
   when: >
     _otel_collector_contrib_version_check.rc != 0 or
-    (otel_collector_contrib_version | string) not in (_otel_collector_contrib_version_check.stdout ~ _otel_collector_contrib_version_check.stderr)
+    (_otel_collector_contrib_version_check.stdout | regex_replace('^.*version ', '') != otel_collector_contrib_version)
   block:
     - name: Create temporary extraction directory
       ansible.builtin.file:
@@ -64,9 +38,9 @@
         mode: '0755'
       become: false
 
-    - name: Extract OpenTelemetry Collector Contrib archive
+    - name: Download and unarchive OpenTelemetry Collector Contrib
       ansible.builtin.unarchive:
-        src: "{{ otel_collector_contrib_download_dir }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.tar.gz"
+        src: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otel_collector_contrib_version }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.tar.gz"
         dest: "/tmp/otel-install-{{ otel_collector_contrib_version }}"
         remote_src: true
         creates: "/tmp/otel-install-{{ otel_collector_contrib_version }}/otelcol-contrib"
