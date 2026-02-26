@@ -14,6 +14,18 @@
     create_home: false
     state: present
 
+- name: Resolve user home directory
+  ansible.builtin.command: echo $HOME
+  changed_when: false
+  become: false
+  register: _otel_user_home_dir
+  when: otel_collector_contrib_download_dir is not defined
+
+- name: Set download directory fact
+  ansible.builtin.set_fact:
+    otel_collector_contrib_download_dir: "{{ _otel_user_home_dir.stdout }}/ansible-persist/otelcol-contrib"
+  when: otel_collector_contrib_download_dir is not defined
+
 - name: Create persistent download directory
   ansible.builtin.file:
     path: "{{ otel_collector_contrib_download_dir }}"
