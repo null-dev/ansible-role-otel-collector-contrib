@@ -5,6 +5,7 @@
   tasks:
     - name: Include otel_collector_contrib
       ansible.builtin.include_role:
+        # See: https://github.com/ansible/molecule/issues/1567#issuecomment-436876722
         name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
       vars:
         otel_collector_contrib_state: absent
