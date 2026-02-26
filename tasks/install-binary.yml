@@ -15,7 +15,7 @@
     state: present
 
 - name: Check if binary exists and version matches
-  ansible.builtin.command: "{{ otel_collector_contrib_binary_install_dir }}/{{ otel_collector_contrib_service_name }} --version"
+  ansible.builtin.command: "{{ otel_collector_contrib_binary_install_dir }}/otelcol-contrib --version"
   register: _otel_collector_contrib_version_check
   failed_when: false
   changed_when: false
