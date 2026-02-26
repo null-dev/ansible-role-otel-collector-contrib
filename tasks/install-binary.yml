@@ -14,28 +14,53 @@
     create_home: false
     state: present
 
-- name: Create temporary download directory
-  ansible.builtin.file:
-    path: "/tmp/otel-install-{{ otel_collector_contrib_version }}"
-    state: directory
-    mode: '0755'
+- name: Check if binary exists and version matches
+  ansible.builtin.command: "{{ otel_collector_contrib_binary_install_dir }}/otelcol-contrib --version"
+  register: _otel_collector_contrib_version_check
+  failed_when: false
+  changed_when: false
+  check_mode: false
 
-- name: Download and unarchive OpenTelemetry Collector Contrib
-  ansible.builtin.unarchive:
-    src: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otel_collector_contrib_version }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.tar.gz"
-    dest: "/tmp/otel-install-{{ otel_collector_contrib_version }}"
-    remote_src: true
-    creates: "/tmp/otel-install-{{ otel_collector_contrib_version }}/otelcol-contrib"
+- name: Debug installed version
+  ansible.builtin.debug:
+    var: _otel_collector_contrib_version_check
 
-- name: Move binary to install directory
-  ansible.builtin.copy:
-    src: "/tmp/otel-install-{{ otel_collector_contrib_version }}/otelcol-contrib"
-    dest: "{{ otel_collector_contrib_binary_install_dir }}/{{ otel_collector_contrib_service_name }}"
-    mode: '0755'
-    owner: "{{ otel_collector_contrib_user }}"
-    group: "{{ otel_collector_contrib_user }}"
-    remote_src: true
-  notify: restart otelcol-contrib
+- name: Install binary
+  when: >
+    _otel_collector_contrib_version_check.rc != 0 or
+    (_otel_collector_contrib_version_check.stdout | regex_replace('^.*version ', '') != otel_collector_contrib_version)
+  block:
+    - name: Create temporary extraction directory
+      ansible.builtin.file:
+        path: "/tmp/otel-install-{{ otel_collector_contrib_version }}"
+        state: directory
+        mode: '0755'
+      become: false
+
+    - name: Download and unarchive OpenTelemetry Collector Contrib
+      ansible.builtin.unarchive:
+        src: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otel_collector_contrib_version }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.tar.gz"
+        dest: "/tmp/otel-install-{{ otel_collector_contrib_version }}"
+        remote_src: true
+        creates: "/tmp/otel-install-{{ otel_collector_contrib_version }}/otelcol-contrib"
+      become: false
+
+    - name: Move binary to install directory
+      ansible.builtin.copy:
+        src: "/tmp/otel-install-{{ otel_collector_contrib_version }}/otelcol-contrib"
+        dest: "{{ otel_collector_contrib_binary_install_dir }}/{{ otel_collector_contrib_service_name }}"
+        mode: '0755'
+        owner: "{{ otel_collector_contrib_user }}"
+        group: "{{ otel_collector_contrib_user }}"
+        remote_src: true
+      notify: restart otelcol-contrib
+      become: true
+
+    - name: Remove temporary extraction directory
+      ansible.builtin.file:
+        path: "/tmp/otel-install-{{ otel_collector_contrib_version }}"
+        state: absent
+      become: false
 
 - name: Install Systemd Service
   ansible.builtin.template:
