@@ -14,18 +14,34 @@
     create_home: false
     state: present
 
-- name: Create temporary download directory
+- name: Create persistent download directory
+  ansible.builtin.file:
+    path: "{{ otel_collector_contrib_download_dir }}"
+    state: directory
+    mode: '0755'
+  become: false
+
+- name: Download OpenTelemetry Collector Contrib archive
+  ansible.builtin.get_url:
+    url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otel_collector_contrib_version }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.tar.gz"
+    dest: "{{ otel_collector_contrib_download_dir }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.tar.gz"
+    mode: '0644'
+  become: false
+
+- name: Create temporary extraction directory
   ansible.builtin.file:
     path: "/tmp/otel-install-{{ otel_collector_contrib_version }}"
     state: directory
     mode: '0755'
+  become: false
 
-- name: Download and unarchive OpenTelemetry Collector Contrib
+- name: Extract OpenTelemetry Collector Contrib archive
   ansible.builtin.unarchive:
-    src: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otel_collector_contrib_version }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.tar.gz"
+    src: "{{ otel_collector_contrib_download_dir }}/otelcol-contrib_{{ otel_collector_contrib_version }}_linux_{{ otel_collector_contrib_arch }}.tar.gz"
     dest: "/tmp/otel-install-{{ otel_collector_contrib_version }}"
     remote_src: true
     creates: "/tmp/otel-install-{{ otel_collector_contrib_version }}/otelcol-contrib"
+  become: false
 
 - name: Move binary to install directory
   ansible.builtin.copy:
@@ -36,6 +52,13 @@
     group: "{{ otel_collector_contrib_user }}"
     remote_src: true
   notify: restart otelcol-contrib
+  become: true
+
+- name: Remove temporary extraction directory
+  ansible.builtin.file:
+    path: "/tmp/otel-install-{{ otel_collector_contrib_version }}"
+    state: absent
+  become: false
 
 - name: Install Systemd Service
   ansible.builtin.template:
