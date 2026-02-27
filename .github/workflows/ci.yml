@@ -41,9 +41,9 @@ jobs:
           MOLECULE_DISTRO: ${{ matrix.distro }}
           MOLECULE_IMAGE: >-
             ${{
-              matrix.distro == 'ubuntu2204' && 'ubuntu:22.04' ||
-              matrix.distro == 'debian12' && 'debian:12' ||
-              matrix.distro == 'debian12-binary' && 'debian:12' ||
-              matrix.distro == 'fedora43' && 'fedora:43' ||
-              matrix.distro == 'archlinux' && 'archlinux:latest'
+              matrix.distro == 'ubuntu2204' && 'docker.io/mpaivabarbosa/molecule-systemd-ubuntu:22.04' ||
+              matrix.distro == 'debian12' && 'docker.io/mpaivabarbosa/molecule-systemd-debian:12' ||
+              matrix.distro == 'debian12-binary' && 'docker.io/mpaivabarbosa/molecule-systemd-debian:12' ||
+              matrix.distro == 'fedora43' && 'docker.io/mpaivabarbosa/molecule-systemd-fedora:43' ||
+              matrix.distro == 'archlinux' && 'docker.io/mpaivabarbosa/molecule-systemd-archlinux:latest'
             }}
