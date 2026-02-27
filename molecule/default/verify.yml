@@ -7,8 +7,8 @@
       ansible.builtin.command: getent passwd otelcol-contrib
       changed_when: false
 
-    - name: Check for otelcol-contrib process
-      ansible.builtin.command: pgrep -f otelcol-contrib
+    - name: Check for otelcol-contrib service running
+      ansible.builtin.command: systemctl is-active otelcol-contrib
       changed_when: false
 
     - name: Check if port 4317 (gRPC) is listening
